@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/loganprice/mantle/pkg/config"
 	"github.com/moby/buildkit/client/llb"
 	"github.com/moby/buildkit/frontend/gateway/client"
-	"github.com/loganprice/mantle/pkg/config"
 )
 
 func TestArchFromPlatform(t *testing.T) {
@@ -119,7 +119,7 @@ type mockAPKFetcher struct {
 	err error
 }
 
-func (m *mockAPKFetcher) FetchIndex(ctx context.Context, c client.Client, repo string, arch string) ([]byte, map[string][]*apkPackage, error) {
+func (m *mockAPKFetcher) FetchIndex(_ context.Context, c client.Client, repo string, arch string) ([]byte, map[string][]*apkPackage, error) {
 	if m.err != nil {
 		return nil, nil, m.err
 	}
@@ -129,7 +129,7 @@ func (m *mockAPKFetcher) FetchIndex(ctx context.Context, c client.Client, repo s
 	return []byte("raw"), idx, nil
 }
 
-func (m *mockAPKFetcher) FetchPackage(repo, arch, filename string) llb.State {
+func (m *mockAPKFetcher) FetchPackage(_, arch, filename string) llb.State {
 	return llb.Scratch()
 }
 
@@ -208,7 +208,7 @@ func TestParseAPKIndex_Valid(t *testing.T) {
 
 	hdr := &tar.Header{
 		Name: "APKINDEX",
-		Mode: 0600,
+		Mode: 0o600,
 		Size: int64(len("P:a\nV:1\n")),
 	}
 	_ = tw.WriteHeader(hdr)

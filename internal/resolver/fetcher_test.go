@@ -14,7 +14,7 @@ type mockClient struct {
 	expectErr    error
 }
 
-func (m *mockClient) Solve(ctx context.Context, req client.SolveRequest) (*client.Result, error) {
+func (m *mockClient) Solve(_ context.Context, req client.SolveRequest) (*client.Result, error) {
 	if m.expectErr != nil {
 		return nil, m.expectErr
 	}
@@ -28,7 +28,7 @@ type mockReference struct {
 	data []byte
 }
 
-func (m *mockReference) ReadFile(ctx context.Context, req client.ReadRequest) ([]byte, error) {
+func (m *mockReference) ReadFile(_ context.Context, req client.ReadRequest) ([]byte, error) {
 	if req.Filename != "APKINDEX.tar.gz" {
 		return nil, fmt.Errorf("unexpected file request: %s", req.Filename)
 	}
@@ -66,7 +66,7 @@ type mockVerifier struct {
 	err error
 }
 
-func (m *mockVerifier) Verify(data []byte, name string) error {
+func (m *mockVerifier) Verify(_ []byte, name string) error {
 	return m.err
 }
 

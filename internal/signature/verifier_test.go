@@ -350,7 +350,7 @@ type mockClient struct {
 	expectErr   error
 }
 
-func (m *mockClient) Solve(ctx context.Context, req client.SolveRequest) (*client.Result, error) {
+func (m *mockClient) Solve(_ context.Context, req client.SolveRequest) (*client.Result, error) {
 	if m.expectErr != nil {
 		return nil, m.expectErr
 	}
@@ -364,7 +364,7 @@ type mockReference struct {
 	pem []byte
 }
 
-func (m *mockReference) ReadFile(ctx context.Context, req client.ReadRequest) ([]byte, error) {
+func (m *mockReference) ReadFile(_ context.Context, req client.ReadRequest) ([]byte, error) {
 	if req.Filename != "wolfi-signing.rsa.pub" {
 		return nil, fmt.Errorf("unexpected file request: %s", req.Filename)
 	}

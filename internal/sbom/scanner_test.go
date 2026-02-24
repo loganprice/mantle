@@ -337,7 +337,7 @@ func (m *mockReference) addFile(path string, content []byte) {
 }
 
 // ReadFile specifically overrides the interface for our parsers.
-func (m *mockReference) ReadFile(ctx context.Context, req client.ReadRequest) ([]byte, error) {
+func (m *mockReference) ReadFile(_ context.Context, req client.ReadRequest) ([]byte, error) {
 	data, ok := m.files[filepath.Clean(req.Filename)]
 	if !ok {
 		return nil, fmt.Errorf("file not found: %s", req.Filename)
@@ -357,7 +357,7 @@ func (m *mockReference) ReadFile(ctx context.Context, req client.ReadRequest) ([
 }
 
 // ReadDir simulates finding subdirectories for package traversal manually
-func (m *mockReference) ReadDir(ctx context.Context, req client.ReadDirRequest) ([]*fstypes.Stat, error) {
+func (m *mockReference) ReadDir(_ context.Context, req client.ReadDirRequest) ([]*fstypes.Stat, error) {
 	// Our mock finds immediate children constructed implicitly from the flat file map paths
 	targetDir := filepath.Clean(req.Path)
 	if !strings.HasSuffix(targetDir, "/") {
@@ -381,9 +381,9 @@ func (m *mockReference) ReadDir(ctx context.Context, req client.ReadDirRequest) 
 			seen[childName] = true
 
 			isDir := len(parts) > 1
-			mode := uint32(0644)
+			mode := uint32(0o644)
 			if isDir {
-				mode = uint32(0755 | os.ModeDir) // Dir bit mask
+				mode = uint32(0o755 | os.ModeDir) // Dir bit mask
 			}
 
 			entries = append(entries, &fstypes.Stat{
@@ -489,7 +489,7 @@ func TestScanner_Go(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	srcFile := filepath.Join(tmpDir, "main.go")
-	_ = os.WriteFile(srcFile, []byte(`package main; import _ "fmt"; func main() {}`), 0644)
+	_ = os.WriteFile(srcFile, []byte(`package main; import _ "fmt"; func main() {}`), 0o644)
 
 	binFile := filepath.Join(tmpDir, "app")
 	cmd := exec.Command("go", "build", "-o", binFile, srcFile)

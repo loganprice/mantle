@@ -21,7 +21,7 @@ type mockReference struct {
 	dirs map[string]bool
 }
 
-func (m *mockReference) ReadDir(ctx context.Context, req client.ReadDirRequest) ([]*fstypes.Stat, error) {
+func (m *mockReference) ReadDir(_ context.Context, req client.ReadDirRequest) ([]*fstypes.Stat, error) {
 	targetDir := filepath.Clean(req.Path)
 	if !strings.HasSuffix(targetDir, "/") {
 		targetDir += "/"
@@ -46,7 +46,7 @@ func (m *mockReference) ReadDir(ctx context.Context, req client.ReadDirRequest) 
 			// Emulate all sub-elements as directories
 			entries = append(entries, &fstypes.Stat{
 				Path: childName,
-				Mode: uint32(0755 | os.ModeDir), // Dir bit
+				Mode: uint32(0o755 | os.ModeDir), // Dir bit
 			})
 		}
 	}

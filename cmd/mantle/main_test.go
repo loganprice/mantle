@@ -30,7 +30,7 @@ func (m *mockClientMain) BuildOpts() client.BuildOpts {
 	}
 }
 
-func (m *mockClientMain) Solve(ctx context.Context, req client.SolveRequest) (*client.Result, error) {
+func (m *mockClientMain) Solve(_ context.Context, req client.SolveRequest) (*client.Result, error) {
 	res := client.NewResult()
 	res.SetRef(&mockReferenceMain{pemKey: m.pemKey, apkIndex: m.apkIndex})
 	return res, nil
@@ -42,7 +42,7 @@ type mockReferenceMain struct {
 	apkIndex []byte
 }
 
-func (m *mockReferenceMain) ReadFile(ctx context.Context, req client.ReadRequest) ([]byte, error) {
+func (m *mockReferenceMain) ReadFile(_ context.Context, req client.ReadRequest) ([]byte, error) {
 	// mock loadConfig reading mantle.yaml
 	if req.Filename == "mantle.yaml" {
 		yamlData := `version: "1.0"
@@ -68,10 +68,10 @@ runtime:
 	return nil, fmt.Errorf("unexpected ReadFile: %s", req.Filename)
 }
 
-func (m *mockReferenceMain) ReadDir(ctx context.Context, req client.ReadDirRequest) ([]*fstypes.Stat, error) {
+func (m *mockReferenceMain) ReadDir(_ context.Context, req client.ReadDirRequest) ([]*fstypes.Stat, error) {
 	return nil, nil
 }
-func (m *mockReferenceMain) StatFile(ctx context.Context, req client.StatRequest) (*fstypes.Stat, error) {
+func (m *mockReferenceMain) StatFile(_ context.Context, req client.StatRequest) (*fstypes.Stat, error) {
 	return nil, nil
 }
 
@@ -79,7 +79,7 @@ func buildTestSignedAPK(priv *rsa.PrivateKey, dataContent string) []byte {
 	var dataBuf bytes.Buffer
 	gw := gzip.NewWriter(&dataBuf)
 	tw := tar.NewWriter(gw)
-	_ = tw.WriteHeader(&tar.Header{Name: "APKINDEX", Size: int64(len(dataContent)), Mode: 0644, Typeflag: tar.TypeReg})
+	_ = tw.WriteHeader(&tar.Header{Name: "APKINDEX", Size: int64(len(dataContent)), Mode: 0o644, Typeflag: tar.TypeReg})
 	_, _ = tw.Write([]byte(dataContent))
 	_ = tw.Close()
 	_ = gw.Close()
@@ -91,7 +91,7 @@ func buildTestSignedAPK(priv *rsa.PrivateKey, dataContent string) []byte {
 	var sigBuf bytes.Buffer
 	gwSig := gzip.NewWriter(&sigBuf)
 	twSig := tar.NewWriter(gwSig)
-	_ = twSig.WriteHeader(&tar.Header{Name: ".SIGN.RSA.key.pub", Size: int64(len(sigBytes)), Mode: 0644, Typeflag: tar.TypeReg})
+	_ = twSig.WriteHeader(&tar.Header{Name: ".SIGN.RSA.key.pub", Size: int64(len(sigBytes)), Mode: 0o644, Typeflag: tar.TypeReg})
 	_, _ = twSig.Write(sigBytes)
 	_ = twSig.Close()
 	_ = gwSig.Close()
