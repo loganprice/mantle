@@ -1,0 +1,50 @@
+# syntax=mantle:dev
+# yaml-language-server: $schema=../../mantle.schema.json
+version: "1.0"
+
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    # - wolfi-base
+    - ca-certificates-bundle
+    # - busybox # Needed for wget and tar in pipeline
+
+pipeline:
+  - name: "install-java"
+    uses: "alpine:3.20"
+    run: 
+      - |
+        set -e
+        ARCH=$(uname -m)
+        VERSION="21.0.2+13"
+        URL=""
+        if [ "$ARCH" = "x86_64" ]; then
+          URL="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2%2B13/OpenJDK21U-jre_x64_linux_hotspot_21.0.2_13.tar.gz"
+        elif [ "$ARCH" = "aarch64" ]; then
+          URL="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2%2B13/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.2_13.tar.gz"
+        else
+          echo "Unsupported architecture: $ARCH"
+          exit 1
+        fi
+        
+        echo "Downloading $URL..."
+        wget -q -O /tmp/java.tar.gz "$URL"
+        
+        mkdir -p /opt/java
+        tar xzf /tmp/java.tar.gz -C /opt/java --strip-components=1
+        rm /tmp/java.tar.gz
+    exports:
+      - /opt/java
+
+runtime:
+  user: 65532
+  workdir: /
+  env:
+    JAVA_HOME: /opt/java
+    PATH: /opt/java/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  entrypoint:
+    - /opt/java/bin/java
+    - -version

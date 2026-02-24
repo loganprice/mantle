@@ -1,0 +1,258 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Hardened Build Specification",
+    "type": "object",
+    "required": [
+        "version",
+        "contents",
+        "runtime"
+    ],
+    "properties": {
+        "version": {
+            "type": "string",
+            "description": "Version of the mantle.yaml specification (e.g., '1.0')"
+        },
+        "args": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            },
+            "description": "Default build arguments available in templates"
+        },
+        "contents": {
+            "type": "object",
+            "required": [
+                "repositories",
+                "keyring",
+                "packages"
+            ],
+            "properties": {
+                "repositories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "pattern": "^https?://",
+                        "minLength": 1
+                    },
+                    "description": "List of APK repositories (must start with http:// or https://)"
+                },
+                "keyring": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "pattern": "^https?://",
+                        "minLength": 1
+                    },
+                    "description": "List of RSA public keys for verification (must start with http:// or https://)"
+                },
+                "packages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "description": "List of packages to install"
+                },
+                "squash": {
+                    "type": "boolean",
+                    "description": "Squash all OS packages into a single layer"
+                }
+            }
+        },
+        "assets": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "source",
+                    "destination"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "source": {
+                        "type": "string",
+                        "pattern": "^(local|oci|https?)://",
+                        "description": "Source URL (local://, oci://, https://)"
+                    },
+                    "destination": {
+                        "type": "string",
+                        "pattern": "^/",
+                        "description": "Absolute path in the image"
+                    },
+                    "from_path": {
+                        "type": "string",
+                        "pattern": "^/",
+                        "description": "Path to extract from source (if OCI source)"
+                    },
+                    "uid": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "gid": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "sha256": {
+                        "type": "string",
+                        "pattern": "^[a-fA-F0-9]{64}$",
+                        "description": "SHA256 checksum (64 hex characters)"
+                    }
+                }
+            }
+        },
+        "pipeline": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "uses",
+                    "run"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "uses": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Image to run the step in"
+                    },
+                    "run": {
+                        "type": "array",
+                        "minItems": 1,
+                        "description": "Shell commands to execute",
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    },
+                    "env": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    },
+                    "workdir": {
+                        "type": "string",
+                        "pattern": "^/"
+                    },
+                    "mounts": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "target"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "cache",
+                                        "secret",
+                                        "ssh"
+                                    ]
+                                },
+                                "target": {
+                                    "type": "string",
+                                    "pattern": "^/"
+                                },
+                                "source": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "exports": {
+                        "type": "array",
+                        "items": {
+                            "oneOf": [
+                                {
+                                    "type": "string",
+                                    "pattern": "^/",
+                                    "description": "Path to export (source == destination)"
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "source"
+                                    ],
+                                    "properties": {
+                                        "source": {
+                                            "type": "string",
+                                            "pattern": "^/"
+                                        },
+                                        "destination": {
+                                            "type": "string",
+                                            "pattern": "^/"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "rootfs_mount": {
+                        "type": "string",
+                        "pattern": "^/"
+                    }
+                }
+            }
+        },
+        "runtime": {
+            "type": "object",
+            "required": [
+                "user",
+                "workdir",
+                "entrypoint"
+            ],
+            "properties": {
+                "user": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "UID to run as"
+                },
+                "workdir": {
+                    "type": "string",
+                    "pattern": "^/"
+                },
+                "entrypoint": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "args": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "env": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "force_root": {
+                    "type": "boolean"
+                },
+                "options": {
+                    "type": "object",
+                    "properties": {
+                        "remove_shells": {
+                            "type": "boolean",
+                            "description": "Whether to remove shells (true by default)"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

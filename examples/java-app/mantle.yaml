@@ -1,0 +1,46 @@
+# syntax=mantle:dev
+# yaml-language-server: $schema=../../mantle.schema.json
+version: "1.0"
+
+package:
+  name: java-app
+  version: 1.0.0
+  epoch: 0
+  description: "A simple Java application"
+  target-architecture:
+    - x86_64
+    - aarch64
+  copyright:
+    - license: Apache-2.0
+
+contents:
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  repositories:
+    - https://packages.wolfi.dev/os
+  packages:
+    # - wolfi-base
+    - openjdk-21-jre
+
+runtime:
+  user: 65532
+  workdir: /app
+  entrypoint: ["java", "-jar", "app.jar"]
+
+pipeline:
+  - name: "build-jar"
+    uses: "maven:3.9-eclipse-temurin-21"
+    workdir: /build
+    env:
+      JAVA_HOME: /opt/java/openjdk
+      PATH: /opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    run: 
+      - mvn clean package -DskipTests
+    exports:
+      - source: /build/target/java-app-1.0.0.jar
+        destination: /app/app.jar
+
+assets:
+  - name: source
+    source: local://.
+    destination: /

@@ -1,0 +1,29 @@
+# syntax=mantle:dev
+version: "1.0"
+
+args:
+  COMPONENT_VERSION: "3.20"
+  MY_UID: "65532"
+
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    # Use standard wolfi-baselayout as a foundation
+    - wolfi-baselayout
+  squash: true
+
+assets:
+  - name: extra-files
+    # Source an entirely dynamic container image purely through templating
+    source: oci://alpine:{{ .BuildArgs.COMPONENT_VERSION }}
+    destination: /alpine-files
+    from_path: /etc/os-release
+
+runtime:
+  # Even integers can be templated via strings as the YAML parser resolves it after
+  user: {{ .BuildArgs.MY_UID }}
+  workdir: /
+  entrypoint: ["cat", "/alpine-files/os-release"]

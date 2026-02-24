@@ -1,0 +1,51 @@
+# syntax=mantle:dev
+version: "1.0"
+
+args:
+  PY_VER: "3.14"
+
+# 1. Package Definitions
+contents:
+  repositories: ["https://packages.wolfi.dev/os"]
+  keyring: ["https://packages.wolfi.dev/os/wolfi-signing.rsa.pub"]
+  packages:
+    - "python-{{ .BuildArgs.PY_VER }}"
+    - "!py3-pip"
+    # - wolfi-base
+    - ca-certificates-bundle
+  squash: true
+
+# 2. Multi-Source Asset Injection
+assets:
+  - name: "app-source"
+    source: "local://./src"
+    destination: "/app"
+    uid: 65532
+
+# 3. Secure Build Pipeline
+pipeline:
+  - name: "pip-install"
+    uses: "python:3.12-alpine"
+    run: 
+      - |
+        pip install \
+          --prefix=/install \
+          -r /work/app/requirements.txt
+    mounts:
+      - type: cache
+        target: "/root/.cache/pip"
+    exports: 
+      - source: "/install"
+        destination: "/usr/local/python"
+
+# 4. Final Image Hardening
+runtime:
+  user: 65532
+  workdir: "/app"
+  entrypoint: ["/usr/bin/python3"]
+  args: ["main.py"]
+  env:
+    PORT: "8080"
+    PYTHONPATH: "/usr/local/python/lib/python3.14/site-packages"
+  capabilities:
+    drop: ["ALL"]
