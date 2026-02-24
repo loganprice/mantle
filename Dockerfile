@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # 1. Pin to an immutable SHR256 digest to prevent supply chain attacks
-FROM golang:1.25-alpine@sha256:45df378b20d3f2b604b7db8a01f60975e5da48dcbebffe130cd32fe09d58eb62 AS builder
+FROM golang:1.25-alpine@sha256:f6751d823c26342f9506c03797d2527668d095b0a15f1862cddb4d927a7a4ced AS builder
 
 # 2. Install certificates, tzdata, and create a non-root user
 # hadolint ignore=DL3018
