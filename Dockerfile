@@ -4,6 +4,7 @@
 FROM golang:1.25-alpine@sha256:45df378b20d3f2b604b7db8a01f60975e5da48dcbebffe130cd32fe09d58eb62 AS builder
 
 # 2. Install certificates, tzdata, and create a non-root user
+# hadolint ignore=DL3018
 RUN apk add --no-cache ca-certificates tzdata && update-ca-certificates \
     && adduser -D -g '' -s /sbin/nologin -u 65532 nonroot
 
