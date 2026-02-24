@@ -30,7 +30,7 @@ export DOCKER_BUILDKIT=1
 Create a file named `mantle.yaml` in your project directory. The very first line must be the syntax directive telling BuildKit to use the Mantle frontend.
 
 ```yaml
-# syntax=registry.labs.io/mantle:v1
+# syntax=ghcr.io/loganprice/mantle:main
 version: "1.0"
 
 # 1. Packages to install (powered by Wolfi)

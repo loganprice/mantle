@@ -5,7 +5,7 @@ import (
 )
 
 func TestParseValidSpec(t *testing.T) {
-	yaml := `# syntax=registry.labs.io/mantle:v1
+	yaml := `# syntax=ghcr.io/loganprice/mantle:main
 version: "1.0"
 contents:
   repositories: ["https://packages.wolfi.dev/os"]
@@ -44,7 +44,7 @@ runtime:
 }
 
 func TestParseSyntaxDirectiveStripped(t *testing.T) {
-	yaml := `# syntax=registry.labs.io/mantle:v1
+	yaml := `# syntax=ghcr.io/loganprice/mantle:main
 version: "1.0"
 contents:
   repositories: ["https://packages.wolfi.dev/os"]

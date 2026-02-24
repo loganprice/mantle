@@ -7,7 +7,7 @@
 //
 // Usage (as a syntax directive in mantle.yaml):
 //
-//	# syntax=registry.labs.io/mantle:v1
+//	# syntax=ghcr.io/loganprice/mantle:main
 //	version: "1.0"
 //	...
 package main

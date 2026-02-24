@@ -7,7 +7,7 @@ Mantle replaces Dockerfiles with a declarative `mantle.yaml` file. This document
 A complete `mantle.yaml` generally consists of the following top-level blocks:
 
 ```yaml
-# syntax=registry.labs.io/mantle:v1
+# syntax=ghcr.io/loganprice/mantle:main
 version: "1.0"
 args: {}
 contents: {}
@@ -21,7 +21,7 @@ runtime: {}
 ### `syntax` Directive
 The first line of your file **must** be the BuildKit syntax directive. This tells the Docker builder to use our frontend instead of the standard Dockerfile parser.
 ```yaml
-# syntax=registry.labs.io/mantle:v1
+# syntax=ghcr.io/loganprice/mantle:main
 ```
 
 ---
