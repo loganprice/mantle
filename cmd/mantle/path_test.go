@@ -28,27 +28,28 @@ func (m *mockReference) ReadDir(_ context.Context, req client.ReadDirRequest) ([
 	}
 
 	seen := make(map[string]bool)
-	var entries []*fstypes.Stat
+	entries := make([]*fstypes.Stat, 0, len(m.dirs))
 
 	found := false
 	for p := range m.dirs {
-		if strings.HasPrefix(p, targetDir) {
-			found = true
-			rel := strings.TrimPrefix(p, targetDir)
-			parts := strings.SplitN(rel, "/", 2)
-
-			childName := parts[0]
-			if childName == "" || seen[childName] {
-				continue
-			}
-			seen[childName] = true
-
-			// Emulate all sub-elements as directories
-			entries = append(entries, &fstypes.Stat{
-				Path: childName,
-				Mode: uint32(0o755 | os.ModeDir), // Dir bit
-			})
+		if !strings.HasPrefix(p, targetDir) {
+			continue
 		}
+		found = true
+		rel := strings.TrimPrefix(p, targetDir)
+		parts := strings.SplitN(rel, "/", 2)
+
+		childName := parts[0]
+		if childName == "" || seen[childName] {
+			continue
+		}
+		seen[childName] = true
+
+		// Emulate all sub-elements as directories
+		entries = append(entries, &fstypes.Stat{
+			Path: childName,
+			Mode: uint32(0o755 | os.ModeDir), // Dir bit
+		})
 	}
 
 	if !found {

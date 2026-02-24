@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/loganprice/mantle/pkg/config"
 	"github.com/moby/buildkit/client/llb"
 	"github.com/moby/buildkit/frontend/gateway/client"
+
+	"github.com/loganprice/mantle/pkg/config"
 )
 
 func TestNewAssembler(t *testing.T) {
@@ -29,7 +30,7 @@ type mockClient struct {
 	expectErr error
 }
 
-func (m *mockClient) Solve(_ context.Context, req client.SolveRequest) (*client.Result, error) {
+func (m *mockClient) Solve(_ context.Context, _ client.SolveRequest) (*client.Result, error) {
 	if m.expectErr != nil {
 		return nil, m.expectErr
 	}

@@ -16,7 +16,7 @@ type mockClientSBOM struct {
 	client.Client
 }
 
-func (m *mockClientSBOM) Solve(_ context.Context, req client.SolveRequest) (*client.Result, error) {
+func (m *mockClientSBOM) Solve(_ context.Context, _ client.SolveRequest) (*client.Result, error) {
 	res := client.NewResult()
 	res.SetRef(&mockReferenceSBOM{})
 	return res, nil
@@ -26,15 +26,15 @@ type mockReferenceSBOM struct {
 	client.Reference
 }
 
-func (m *mockReferenceSBOM) ReadDir(_ context.Context, req client.ReadDirRequest) ([]*fstypes.Stat, error) {
+func (m *mockReferenceSBOM) ReadDir(_ context.Context, _ client.ReadDirRequest) ([]*fstypes.Stat, error) {
 	// Let's pretend there are no files, scanner will just output base SBOM
 	return nil, nil
 }
 
-func (m *mockReferenceSBOM) StatFile(_ context.Context, req client.StatRequest) (*fstypes.Stat, error) {
+func (m *mockReferenceSBOM) StatFile(_ context.Context, _ client.StatRequest) (*fstypes.Stat, error) {
 	return nil, nil
 }
-func (m *mockReferenceSBOM) ReadFile(_ context.Context, req client.ReadRequest) ([]byte, error) {
+func (m *mockReferenceSBOM) ReadFile(_ context.Context, _ client.ReadRequest) ([]byte, error) {
 	return nil, nil
 }
 

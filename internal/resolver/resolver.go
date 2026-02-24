@@ -203,11 +203,11 @@ func parseAPKIndex(data []byte) (map[string][]*apkPackage, error) {
 			}
 			if header.Name == "APKINDEX" {
 				res, err := parseIndexStream(tr)
-				gzr.Close()
+				_ = gzr.Close()
 				return res, err
 			}
 		}
-		gzr.Close()
+		_ = gzr.Close()
 	}
 	return nil, fmt.Errorf("APKINDEX not found in archive")
 }

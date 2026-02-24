@@ -350,7 +350,7 @@ type mockClient struct {
 	expectErr   error
 }
 
-func (m *mockClient) Solve(_ context.Context, req client.SolveRequest) (*client.Result, error) {
+func (m *mockClient) Solve(_ context.Context, _ client.SolveRequest) (*client.Result, error) {
 	if m.expectErr != nil {
 		return nil, m.expectErr
 	}

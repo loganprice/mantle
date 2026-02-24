@@ -81,7 +81,7 @@ func (m *mockClientConfig) BuildOpts() client.BuildOpts {
 	return client.BuildOpts{Opts: m.opts}
 }
 
-func (m *mockClientConfig) Solve(_ context.Context, req client.SolveRequest) (*client.Result, error) {
+func (m *mockClientConfig) Solve(_ context.Context, _ client.SolveRequest) (*client.Result, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
@@ -95,7 +95,7 @@ type mockReferenceConfig struct {
 	data []byte
 }
 
-func (m *mockReferenceConfig) ReadFile(_ context.Context, req client.ReadRequest) ([]byte, error) {
+func (m *mockReferenceConfig) ReadFile(_ context.Context, _ client.ReadRequest) ([]byte, error) {
 	if m.data == nil {
 		return nil, fmt.Errorf("file not found")
 	}

@@ -14,7 +14,7 @@ type mockClient struct {
 	expectErr    error
 }
 
-func (m *mockClient) Solve(_ context.Context, req client.SolveRequest) (*client.Result, error) {
+func (m *mockClient) Solve(_ context.Context, _ client.SolveRequest) (*client.Result, error) {
 	if m.expectErr != nil {
 		return nil, m.expectErr
 	}
@@ -66,7 +66,7 @@ type mockVerifier struct {
 	err error
 }
 
-func (m *mockVerifier) Verify(_ []byte, name string) error {
+func (m *mockVerifier) Verify(_ []byte, _ string) error {
 	return m.err
 }
 

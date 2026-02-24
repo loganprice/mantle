@@ -67,7 +67,7 @@ func TestGetCreationTime(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to set SOURCE_DATE_EPOCH: %v", err)
 	}
-	defer os.Unsetenv("SOURCE_DATE_EPOCH")
+	defer func() { _ = os.Unsetenv("SOURCE_DATE_EPOCH") }()
 
 	epochStr := getCreationTime()
 	if epochStr != "1970-01-12T13:46:40Z" {

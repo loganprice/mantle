@@ -365,33 +365,34 @@ func (m *mockReference) ReadDir(_ context.Context, req client.ReadDirRequest) ([
 	}
 
 	seen := make(map[string]bool)
-	var entries []*fstypes.Stat
+	entries := make([]*fstypes.Stat, 0, len(m.files))
 
 	found := false
 	for p := range m.files {
-		if strings.HasPrefix(p, targetDir) {
-			found = true
-			rel := strings.TrimPrefix(p, targetDir)
-			parts := strings.SplitN(rel, "/", 2)
-
-			childName := parts[0]
-			if childName == "" || seen[childName] {
-				continue
-			}
-			seen[childName] = true
-
-			isDir := len(parts) > 1
-			mode := uint32(0o644)
-			if isDir {
-				mode = uint32(0o755 | os.ModeDir) // Dir bit mask
-			}
-
-			entries = append(entries, &fstypes.Stat{
-				Path: childName,
-				Mode: mode,
-				Size: int64(len(m.files[p])),
-			})
+		if !strings.HasPrefix(p, targetDir) {
+			continue
 		}
+		found = true
+		rel := strings.TrimPrefix(p, targetDir)
+		parts := strings.SplitN(rel, "/", 2)
+
+		childName := parts[0]
+		if childName == "" || seen[childName] {
+			continue
+		}
+		seen[childName] = true
+
+		isDir := len(parts) > 1
+		mode := uint32(0o644)
+		if isDir {
+			mode = uint32(0o755 | os.ModeDir) // Dir bit mask
+		}
+
+		entries = append(entries, &fstypes.Stat{
+			Path: childName,
+			Mode: mode,
+			Size: int64(len(m.files[p])),
+		})
 	}
 
 	if !found {
@@ -486,7 +487,7 @@ func TestScanner_Go(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	srcFile := filepath.Join(tmpDir, "main.go")
 	_ = os.WriteFile(srcFile, []byte(`package main; import _ "fmt"; func main() {}`), 0o644)

@@ -30,7 +30,7 @@ func (m *mockClientMain) BuildOpts() client.BuildOpts {
 	}
 }
 
-func (m *mockClientMain) Solve(_ context.Context, req client.SolveRequest) (*client.Result, error) {
+func (m *mockClientMain) Solve(_ context.Context, _ client.SolveRequest) (*client.Result, error) {
 	res := client.NewResult()
 	res.SetRef(&mockReferenceMain{pemKey: m.pemKey, apkIndex: m.apkIndex})
 	return res, nil
@@ -68,10 +68,10 @@ runtime:
 	return nil, fmt.Errorf("unexpected ReadFile: %s", req.Filename)
 }
 
-func (m *mockReferenceMain) ReadDir(_ context.Context, req client.ReadDirRequest) ([]*fstypes.Stat, error) {
+func (m *mockReferenceMain) ReadDir(_ context.Context, _ client.ReadDirRequest) ([]*fstypes.Stat, error) {
 	return nil, nil
 }
-func (m *mockReferenceMain) StatFile(_ context.Context, req client.StatRequest) (*fstypes.Stat, error) {
+func (m *mockReferenceMain) StatFile(_ context.Context, _ client.StatRequest) (*fstypes.Stat, error) {
 	return nil, nil
 }
 
